@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader"; // ✅ Spinner
 
 const SearchBar = () => {
+  const navigate = useNavigate();
+
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false); // ✅ Spinner state
   const [history, setHistory] = useState(() => {
     const stored = localStorage.getItem("searchHistory");
     return stored ? JSON.parse(stored) : [];
@@ -17,8 +22,6 @@ const SearchBar = () => {
     if (!text) return;
     try {
       const res = await axios.get(`/api/geoapify/autocomplete?text=${text}`);
-      console.log("Suggestion response:", res.data); // DEBUG
-
       setSuggestions(res.data.features || []);
     } catch (err) {
       console.error("Autocomplete failed", err);
@@ -29,10 +32,16 @@ const SearchBar = () => {
   const fetchPlaces = async (place) => {
     const { lat, lon, formatted } = place.properties;
     try {
+      setLoading(true); // Start spinner
       const res = await axios.get(
         `/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=2000`
       );
-      setResults(res.data.features || []);
+
+      const filtered = (res.data.features || []).filter(
+        (p) => p.properties.name && p.properties.name.trim() !== ""
+      );
+
+      setResults(filtered);
 
       const updatedHistory = [
         formatted,
@@ -42,10 +51,11 @@ const SearchBar = () => {
       localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
     } catch (err) {
       console.error("Places fetch failed", err);
+    } finally {
+      setLoading(false); // Stop spinner
     }
   };
 
-  //Handle search from button click
   const handleSearch = () => {
     if (suggestions.length > 0) {
       fetchPlaces(suggestions[0]);
@@ -75,8 +85,6 @@ const SearchBar = () => {
           value={query}
           onChange={(e) => {
             const value = e.target.value;
-            console.log("User typing:", value); // DEBUG
-
             setQuery(value);
             if (value.length > 2) fetchSuggestions(value);
             else setSuggestions([]);
@@ -90,16 +98,21 @@ const SearchBar = () => {
           }}
         />
 
-        {/* Search Button */}
+        {/* Search Button with Spinner */}
         <button
-          className="absolute right-0 top-0 h-full px-6 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-r-lg transition-colors duration-200"
+          className="absolute right-0 top-0 h-full px-6 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-r-lg transition-colors duration-200 flex items-center justify-center gap-2"
           onClick={handleSearch}
+          disabled={loading}
         >
-          Search
+          {loading ? (
+            <ClipLoader size={18} color="#ffffff" />
+          ) : (
+            "Search"
+          )}
         </button>
       </div>
 
-      {/*Suggestions */}
+      {/* Suggestions */}
       {suggestions.length > 0 && (
         <ul className="bg-white mt-1 rounded shadow-md max-h-48 overflow-y-auto">
           {suggestions.map((sug, idx) => (
@@ -113,29 +126,46 @@ const SearchBar = () => {
               }}
             >
               {sug.properties.formatted}
+              
             </li>
+            
           ))}
         </ul>
       )}
 
       {/* Search Results */}
       <div className="mt-6 space-y-4">
-        {results.map((place, idx) => (
-          <div
-            key={idx}
-            className="border rounded-lg p-4 bg-white  shadow flex gap-4 items-start"
-          >
-            <div className="flex-1 ">
-              <h2 className="text-lg text-gray-600 font-semibold">
-                {place.properties.name || "Unnamed place"}
-              </h2>
-              <p className="text-gray-600">{place.properties.formatted}</p>
-              <p className="text-sm text-gray-500 italic">
-                Category: {place.properties.categories?.[0] || "N/A"}
-              </p>
+        {results.map((place, idx) => {
+          const placeName = place.properties.name || "Unnamed place";
+          const formattedName = encodeURIComponent(place.properties.formatted);
+
+          return (
+            <div
+              key={idx}
+              onClick={() =>
+                navigate(`/place/${formattedName}`, {
+                  state: {
+                    lat: place.properties.lat,
+                    lon: place.properties.lon,
+                    formatted: place.properties.formatted,
+                  },
+                })
+              }
+              className="border rounded-lg p-4 bg-white shadow flex gap-4 items-start cursor-pointer hover:bg-gray-100 transition"
+            >
+              <div className="flex-1">
+                <h2 className="text-lg text-gray-600 font-semibold">
+                  {placeName}
+                </h2>
+                <p className="text-gray-600">{place.properties.formatted}</p>
+                <p className="text-sm text-gray-500 italic">
+                  Category: {place.properties.categories?.[0] || "N/A"}
+                </p>
+                
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </motion.div>
   );

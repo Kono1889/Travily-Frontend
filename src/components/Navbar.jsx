@@ -7,7 +7,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-md p-4 fixed max-w-full z-20 top-0 left-0 right-0">
+    <nav className="bg-white shadow-md p-4 fixed max-w-full z-90 top-0 left-0 right-0">
       <div className="max-w-7xl mx-auto lg:mx-20 flex justify-between items-center">
         <Link to="/">
           <div className="text-2xl font-bold text-blue-900">Travily</div>
@@ -16,9 +16,9 @@ const Navbar = () => {
           <Link to="/">
             <div className="hover:text-blue-600 transition">Home</div>
           </Link>
-          <a href="#features" className="hover:text-blue-600 transition">
-            Features
-          </a>
+          <Link to="/news">
+            <div className="hover:text-blue-600 transition">News</div>
+          </Link>
           <a href="#contact" className="hover:text-blue-600 transition">
             Contact
           </a>

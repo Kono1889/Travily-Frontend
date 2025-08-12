@@ -67,13 +67,20 @@ const Budget = () => {
     };
   }, [isDropdownOpen]);
 
-  const formatted =
+  // const formatted =
+  //   typeof aiResponse === "string"
+  //     ? aiResponse
+  //         .split("\n")
+  //         .map((line) => line?.replace(/^\*\s?/, "• "))
+  //         .join("\n")
+  //     : "";
+
+  const daySections =
     typeof aiResponse === "string"
       ? aiResponse
-          .split("\n")
-          .map((line) => line?.replace(/^\*\s?/, "• "))
-          .join("\n")
-      : "";
+          .split(/(?=Day\s+\d+)/i) // split whenever "Day X" starts
+          .filter((section) => section.trim() !== "")
+      : [];
 
   const handleActivitySelect = (activity) => {
     setSelectedActivities((prev) =>
@@ -141,7 +148,7 @@ const Budget = () => {
           transition={{ delay: 0.7 }}
         >
           {/* Destination Input */}
-          <div className="relative w-full" ref={travelRef}>
+          <div className="relative w-full">
             <input
               type="text"
               placeholder="Enter Destination"
@@ -155,7 +162,7 @@ const Budget = () => {
           </div>
 
           {/* Travel Style Select */}
-          <div className="relative w-full" ref={activitiesRef}>
+          <div className="relative w-full" ref={travelRef}>
             <div
               onClick={() => setIsDropdownOpen("travel")}
               className="cursor-pointer py-2 px-4 border border-gray-300 rounded-lg bg-white flex justify-between items-center"
@@ -187,7 +194,7 @@ const Budget = () => {
           </div>
 
           {/* Activities Multi-Select */}
-          <div className="relative w-full">
+          <div className="relative w-full" ref={activitiesRef}>
             <div
               onClick={() =>
                 setIsDropdownOpen(
@@ -240,7 +247,7 @@ const Budget = () => {
         </motion.div>
 
         {/* AI Response */}
-        {aiResponse && (
+        {/* {aiResponse && (
           <div className="mt-10 p-6 bg-white rounded-lg shadow border border-gray-200">
             <h3 className="text-xl font-bold mb-2 text-gray-800">
               Your Budget Plan:
@@ -248,6 +255,36 @@ const Budget = () => {
             <p className="whitespace-pre-line text-gray-700">
               {formatted.replace(/\*+/g, "")}
             </p>
+          </div>
+        )} */}
+
+        {daySections.length > 0 && (
+          <div className="mt-10 space-y-4">
+            {daySections.map((section, index) => {
+              const bgColors = [
+                "bg-orange-100 border-orange-300",
+                "bg-blue-100 border-blue-300",
+                "bg-green-100 border-green-300",
+              ];
+              const colorClass = bgColors[index % bgColors.length];
+
+              // Add bullet formatting to lines starting with *
+              const formattedSection = section
+                .split("\n")
+                .map((line) => line.replace(/^\*\s?/, "• "))
+                .join("\n");
+
+              return (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg shadow border ${colorClass}`}
+                >
+                  <p className="whitespace-pre-line text-gray-800">
+                    {formattedSection.trim().replace(/\*+/g, "")}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
