@@ -271,7 +271,8 @@ const Budget = () => {
               // Add bullet formatting to lines starting with *
               const formattedSection = section
                 .split("\n")
-                .map((line) => line.replace(/^\*\s?/, "• "))
+                .map((line) => line.replace(/^\*+\s?/, "• "))
+                .filter((line) => line.trim() !== "•" && line.trim() !== "")
                 .join("\n");
 
               return (

@@ -191,7 +191,7 @@ const MapCluster = () => {
             center={center}
             zoom={13}
             style={{ height: "100%", width: "100%" }}
-            whenCreated={(mapInstance) => (mapRef.current = mapInstance)} // 👈 capture map instance
+            whenCreated={(mapInstance) => (mapRef.current = mapInstance)} // capture map instance
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

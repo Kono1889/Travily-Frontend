@@ -13,7 +13,7 @@ const ItineraryPreference = () => {
     "History & Culture",
     "Shopping",
   ];
-
+ 
   const [selectedActivities, setSelectedActivities] = useState([]);
   const handleActivitySelect = (activity) => {
     if (selectedActivities.includes(activity)) {
@@ -23,15 +23,15 @@ const ItineraryPreference = () => {
     }
   };
 
+  const activitiesDropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const activitiesRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (
         isDropdownOpen &&
-        activitiesRef.current &&
-        !activitiesRef.current.contains(event.target)
+        activitiesDropdownRef.current &&
+        !activitiesDropdownRef.current.contains(event.target)
       ) {
         setIsDropdownOpen(false);
       }
@@ -48,13 +48,21 @@ const ItineraryPreference = () => {
   const [loading, setLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState("");
 
-  const formatted =
+   const daySections =
     typeof aiResponse === "string"
       ? aiResponse
-          .split("\n")
-          .map((line) => (line ? line.replace(/^\*\s?/, "• ") : ""))
-          .join("\n")
-      : "";
+          .split(/(?=Day\s+\d+)/i) // split whenever "Day X" starts
+          .filter((section) => section.trim() !== "")
+      : [];
+
+
+  // const formatted =
+  //   typeof aiResponse === "string"
+  //     ? aiResponse
+  //         .split("\n")
+  //         .map((line) => (line ? line.replace(/^\*\s?/, "• ") : ""))
+  //         .join("\n")
+  //     : "";
 
   const isValidBudgetRange = (range) => {
     const regex = /^\s*\d+\s*-\s*\d+\s*$/;
@@ -125,7 +133,7 @@ const ItineraryPreference = () => {
           transition={{ delay: 0.7 }}
         >
           {/* Destination Input */}
-          <div className="relative w-full" ref={activitiesRef}>
+          <div className="relative w-full">
             <input
               type="text"
               placeholder="Enter Travel Destination"
@@ -139,7 +147,7 @@ const ItineraryPreference = () => {
           </div>
 
           {/* Activities Multi-Select */}
-          <div className="relative w-full">
+          <div className="relative w-full" ref={activitiesDropdownRef}>
             <div
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="cursor-pointer py-2 px-4 border border-gray-300 rounded-lg bg-white flex justify-between items-center"
@@ -189,9 +197,12 @@ const ItineraryPreference = () => {
           <div className="relative w-full">
             <input
               type="text"
+              min="1"
               placeholder="Number of Days"
-              value={numberOfDays}
-              onChange={(e) => setNumberOfDays(e.target.value)}
+              value={numberOfDays || ""}
+              onChange={(e) =>
+                setNumberOfDays(e.target.value.replace(/[^0-9]/g, ""))
+              }
               className="w-full py-2 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400 transition"
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -219,7 +230,7 @@ const ItineraryPreference = () => {
         </div>
 
         {/* AI Response */}
-        {aiResponse && (
+        {/* {aiResponse && (
           <div className="mt-10 p-6 bg-white rounded-lg shadow border border-gray-200">
             <h3 className="text-xl font-bold mb-2 text-gray-800">
               Your Budget Plan:
@@ -227,6 +238,37 @@ const ItineraryPreference = () => {
             <p className="whitespace-pre-line text-gray-700">
               {formatted.replace(/\*+/g, "")}
             </p>
+          </div>
+        )} */}
+
+        {daySections.length > 0 && (
+          <div className="mt-10 space-y-4">
+            {daySections.map((section, index) => {
+              const bgColors = [
+                "bg-orange-100 border-orange-300",
+                "bg-blue-100 border-blue-300",
+                "bg-green-100 border-green-300",
+              ];
+              const colorClass = bgColors[index % bgColors.length];
+
+              // Bullet formatting
+              const formattedSection = section
+                .split("\n")
+                .map((line) => line.replace(/^\*+\s?/, "• "))
+                .filter((line) => line.trim() !== "•" && line.trim() !== "")
+                .join("\n");
+
+              return (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg shadow border ${colorClass}`}
+                >
+                  <p className="whitespace-pre-line text-gray-800">
+                    {formattedSection.trim().replace(/\*+/g, "")}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
