@@ -13,7 +13,7 @@ const ItineraryPreference = () => {
     "History & Culture",
     "Shopping",
   ];
- 
+
   const [selectedActivities, setSelectedActivities] = useState([]);
   const handleActivitySelect = (activity) => {
     if (selectedActivities.includes(activity)) {
@@ -48,13 +48,37 @@ const ItineraryPreference = () => {
   const [loading, setLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState("");
 
-   const daySections =
-    typeof aiResponse === "string"
-      ? aiResponse
-          .split(/(?=Day\s+\d+)/i) // split whenever "Day X" starts
+  // Extract safety score (if present)
+  let safetyScore = null;
+  let aiResponseWithoutSafety = aiResponse;
+  let tipsSection = null;
+  if (typeof aiResponse === "string") {
+    // Safety Score
+    const safetyMatch = aiResponse.match(
+      /Safety Score\s*[:-]?\s*([0-9]+(\.[0-9]+)?(\s*\/\s*[0-9]+(\.[0-9]+)?)?)/i
+    );
+    if (safetyMatch) {
+      safetyScore = safetyMatch[0];
+      aiResponseWithoutSafety = aiResponse.replace(safetyMatch[0], "");
+    }
+    // Tips to maximize value
+    const tipsMatch = aiResponseWithoutSafety.match(
+      /Tips to maximize value[\s\S]*/i
+    );
+    if (tipsMatch) {
+      tipsSection = tipsMatch[0];
+      aiResponseWithoutSafety = aiResponseWithoutSafety.replace(
+        tipsMatch[0],
+        ""
+      );
+    }
+  }
+  const daySections =
+    typeof aiResponseWithoutSafety === "string"
+      ? aiResponseWithoutSafety
+          .split(/(?=Day\s+\d+)/i)
           .filter((section) => section.trim() !== "")
       : [];
-
 
   // const formatted =
   //   typeof aiResponse === "string"
@@ -240,6 +264,30 @@ const ItineraryPreference = () => {
             </p>
           </div>
         )} */}
+
+        {/* Safety Score Section */}
+        {safetyScore && (
+          <div className="mt-8 mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded shadow flex items-center">
+            <span className="font-bold text-yellow-700 mr-2">
+              {safetyScore}
+            </span>
+            <span className="text-gray-700">
+              (for your selected destination)
+            </span>
+          </div>
+        )}
+
+        {/* Tips to Maximize Value Section */}
+        {tipsSection && (
+          <div className="mt-8 mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded shadow">
+            <span className="font-bold text-green-700 block mb-2">
+              Tips to maximize value
+            </span>
+            <span className="text-gray-800 whitespace-pre-line">
+              {tipsSection.replace(/Tips to maximize value:?/i, "").trim()}
+            </span>
+          </div>
+        )}
 
         {daySections.length > 0 && (
           <div className="mt-10 space-y-4">
