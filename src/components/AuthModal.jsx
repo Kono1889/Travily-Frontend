@@ -1,7 +1,8 @@
+// components/AuthModal.js
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../contexts/AuthContexts";
+import { useAuth } from "../contexts/AuthContexts"; // Fixed import path
 
 const AuthModal = ({ isOpen, onClose }) => {
   const { login, register, loading } = useAuth();
@@ -53,18 +54,15 @@ const AuthModal = ({ isOpen, onClose }) => {
     if (!validateForm()) return;
 
     try {
-      let success;
       if (isLogin) {
-        success = await login(formData);
+        await login(formData);
       } else {
-        success = await register(formData);
+        await register(formData);
       }
-
-      if (success) {
-        handleClose();
-      }
+      handleClose();
     } catch (error) {
-      setErrors({ submit: error.message || "Authentication failed" });
+
+      setErrors({ submit: error.message });
     }
   };
 
@@ -120,7 +118,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                   Username
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 text-gray-400 transform -translate-y-1/2 h-5 w-5 " />
+                  <User className="absolute left-3 top-1/2 text-gray-400 transform -translate-y-1/2 h-5 w-5" />
                   <input
                     type="text"
                     value={formData.username}
@@ -170,7 +168,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="w-full  pl-10 pr-12 py-3 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none focus:border-transparent"
                   placeholder="Enter your password"
                 />
                 <button
