@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileMenu from "./MobileMenu";
-import { Link } from "react-router-dom"; // use react-router-dom
+import { Link } from "react-router-dom";
 import { LogOut, Mail } from "lucide-react";
 import { useAuth } from "../contexts/AuthContexts";
-import AuthModal from "./AuthModal"; // import modal
+import AuthModal from "./AuthModal";
+import SignBanner from "./SignBanner";
+import UserAvatar from "./UserAvatar";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,12 +27,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getUserInitial = () => {
-    if (user?.username) return user.username.charAt(0).toUpperCase();
-    if (user?.email) return user.email.charAt(0).toUpperCase();
-    return "U";
-  };
-
   return (
     <>
       <nav className="bg-white shadow-md p-4 fixed max-w-full z-100 top-0 left-0 right-0">
@@ -42,19 +38,24 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex gap-6 font-semibold text-gray-700 items-center">
-            <Link to="/" className="hover:text-blue-600 transition">Home</Link>
-            <Link to="/news" className="hover:text-blue-600 transition">News</Link>
-            <a href="#contact" className="hover:text-blue-600 transition">Contact</a>
+            <Link to="/" className="hover:text-blue-600 transition">
+              Home
+            </Link>
+            <Link to="/news" className="hover:text-blue-600 transition">
+              News
+            </Link>
+            <a href="#contact" className="hover:text-blue-600 transition">
+              Contact
+            </a>
 
             {/* User profile / auth */}
             {isAuthenticated && !isAnonymous ? (
               <div className="relative" ref={dropdownRef}>
-                <button
+                {/* Pass user object instead of initial */}
+                <UserAvatar 
+                  user={user}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold hover:bg-blue-600 transition"
-                >
-                  {getUserInitial()}
-                </button>
+                />
 
                 <AnimatePresence>
                   {dropdownOpen && (
@@ -87,19 +88,19 @@ const Navbar = () => {
               </div>
             ) : (
               <button
-                onClick={() => setIsAuthModalOpen(true)} // 👈 open modal
+                onClick={() => setIsAuthModalOpen(true)}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition font-semibold"
               >
                 Sign In
               </button>
             )}
+            <div className="absolute top-20 right-0">
+              <SignBanner />
+            </div>
           </div>
 
           {/* Mobile Hamburger */}
-          <button
-            className="md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             <div className="space-y-1">
               <span className="block w-6 h-0.5 bg-black"></span>
               <span className="block w-6 h-0.5 bg-black"></span>
@@ -111,18 +112,18 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <AnimatePresence>
           {menuOpen && (
-            <MobileMenu 
+            <MobileMenu
               setMenuOpen={setMenuOpen}
-              openAuthModal={() => setIsAuthModalOpen(true)} // 👈 pass modal trigger
+              openAuthModal={() => setIsAuthModalOpen(true)}
             />
           )}
         </AnimatePresence>
       </nav>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </>
   );

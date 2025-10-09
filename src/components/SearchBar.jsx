@@ -6,7 +6,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useAuth } from "../contexts/AuthContexts";
-import AuthModal from "./AuthModal"; // Import the modal
+import AuthModal from "./AuthModal"; 
 
 const SearchBar = () => {
   const navigate = useNavigate();
@@ -122,29 +122,7 @@ const SearchBar = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.7 }}
       >
-        {/* Anonymous User Banner */}
-        {isAnonymous && (
-          <motion.div
-            className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-blue-600">✨</span>
-              <p className="text-blue-800 text-sm">
-                Sign in to save your search history and get personalized
-                recommendations!
-              </p>
-            </div>
-            <button
-              className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
-              onClick={() => setIsAuthModalOpen(true)} // Open modal
-            >
-              Sign In
-            </button>
-          </motion.div>
-        )}
-
+        
         {/* Authenticated User Welcome */}
         {!isAnonymous && user && (
           <motion.div
