@@ -1,7 +1,7 @@
 // components/SearchBar.jsx (updated)
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react"; // Added X icon
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -17,6 +17,7 @@ const SearchBar = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(true); // Added state for welcome banner
 
   const [localHistory, setLocalHistory] = useState(() => {
     if (isAnonymous) {
@@ -93,7 +94,7 @@ const SearchBar = () => {
 
   useEffect(() => {
     if (!isAnonymous && token) {
-      // Fetch user’s saved history from backend
+      // Fetch user's saved history from backend
       const fetchUserHistory = async () => {
         try {
           const res = await axios.get("/api/user/history", {
@@ -123,18 +124,27 @@ const SearchBar = () => {
         transition={{ duration: 0.3, delay: 0.7 }}
       >
         
-        {/* Authenticated User Welcome */}
-        {!isAnonymous && user && (
+        {/* Authenticated User Welcome with Close Button */}
+        {!isAnonymous && user && showWelcomeBanner && (
           <motion.div
             className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <p className="text-green-800 text-sm flex items-center gap-2">
-              <span>👋</span>
-              Welcome back, {user.username || user.email}! Your searches are
-              being saved.
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-green-800 text-sm flex items-center gap-2">
+                <span>👋</span>
+                Hey {user.username || user.email}! Your searches are
+                being saved now.
+              </p>
+              <button
+                className="flex-shrink-0 p-1 text-green-400 hover:text-green-600 cursor-pointer transition-colors"
+                onClick={() => setShowWelcomeBanner(false)}
+                aria-label="Close welcome banner"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </motion.div>
         )}
 
