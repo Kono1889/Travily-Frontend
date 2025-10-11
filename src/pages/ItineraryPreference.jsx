@@ -144,7 +144,7 @@ const ItineraryPreference = () => {
 
     try {
       const response = await axios.post(
-        `$${config.apiUrl}/api/insight/budget-insight`,
+        `${config.apiUrl}/api/insight/budget-insight`,
         {
           destination,
           activity: selectedActivities,
