@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import MarkerClusterLayer from "../components/MarkerClusterLayer"; // adjust path as needed
 import axios from "axios";
 import toast from "react-hot-toast";
+import config from "../config";
 
 // Fix leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -60,7 +61,7 @@ const MapCluster = () => {
 
     try {
       const res = await axios.get(
-        `https://travily-backend.onrender.com/api/places?city=${city}&category=${category}`
+        `$${config.apiUrl}/api/places?city=${city}&category=${category}`
       );
       const results = res.data.places || res.data;
 

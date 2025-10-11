@@ -1,5 +1,6 @@
 // contexts/AuthContext.js
 import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
+import config from '../config'; // Import the config file
 
 const AuthContext = createContext();
 
@@ -18,23 +19,49 @@ export const AuthProvider = ({ children }) => {
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [loading, setLoading] = useState(true);
 
+  // Use config.apiUrl instead of getBaseUrl function
+  const apiFetch = async (endpoint, options = {}) => {
+    const url = `${config.apiUrl}${endpoint}`;
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
+
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Server returned HTML instead of JSON: ${text.substring(0, 100)}`);
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(`API call failed for ${url}:`, error);
+      throw error;
+    }
+  };
+
   // ---- Anonymous Session Creator ----
   const createAnonymousSession = useCallback(async (retryCount = 0) => {
-    if (retryCount > 3) {
+    if (retryCount > 2) {
       console.error("Max retries reached for anonymous session");
       return;
     }
     try {
-      const response = await fetch("/api/auth/anonymous", {
+      const data = await apiFetch('/api/auth/anonymous', {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create anonymous session");
-      }
-
-      const data = await response.json();
 
       if (data.token) {
         localStorage.setItem("travily_token", data.token);
@@ -47,7 +74,10 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Anonymous session error:", error);
-      setTimeout(() => createAnonymousSession(retryCount + 1), 1000);
+      // Only retry in development
+      if (config.apiUrl.includes('localhost')) {
+        setTimeout(() => createAnonymousSession(retryCount + 1), 1000);
+      }
     }
   }, []);
 
@@ -58,14 +88,13 @@ export const AuthProvider = ({ children }) => {
       const storedUser = localStorage.getItem("travily_user");
 
       if (storedToken && storedUser) {
-        const response = await fetch("/api/auth/verify", {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        });
+        try {
+          const data = await apiFetch('/api/auth/verify', {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
 
-        if (response.ok) {
-          const data = await response.json();
           if (data.valid) {
             setUser(data.user);
             setToken(storedToken);
@@ -74,7 +103,11 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             return;
           }
+        } catch (error) {
+          console.log("Token verification failed:", error);
+          // Continue to anonymous session
         }
+        
         // If verification fails, clear invalid tokens
         localStorage.removeItem("travily_token");
         localStorage.removeItem("travily_user");
@@ -99,11 +132,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const currentUser = JSON.parse(localStorage.getItem("travily_user") || "{}");
       
-      const response = await fetch("/api/auth/register", {
+      const data = await apiFetch('/api/auth/register', {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           email: userData.email,
           password: userData.password,
@@ -112,14 +142,6 @@ export const AuthProvider = ({ children }) => {
         }),
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
-        // Your backend returns { error: "message" } for errors
-        throw new Error(data.error || "Registration failed");
-      }
-
-      // Your backend returns { token, user } on success
       localStorage.setItem("travily_token", data.token);
       localStorage.setItem("travily_user", JSON.stringify(data.user));
 
@@ -131,7 +153,16 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error("Registration error:", error);
-      throw error;
+      let errorMessage = error.message;
+      
+      // Better error messages for users
+      if (errorMessage.includes('HTML instead of JSON')) {
+        errorMessage = "Server configuration error. Please contact support.";
+      } else if (errorMessage.includes('Failed to fetch')) {
+        errorMessage = "Network error. Please check your connection.";
+      }
+      
+      throw new Error(errorMessage);
     }
   };
 
@@ -140,11 +171,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const currentUser = JSON.parse(localStorage.getItem("travily_user") || "{}");
       
-      const response = await fetch("/api/auth/login", {
+      const data = await apiFetch('/api/auth/login', {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           email: credentials.email,
           password: credentials.password,
@@ -152,14 +180,6 @@ export const AuthProvider = ({ children }) => {
         }),
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
-        // Your backend returns { error: "Invalid credentials" } for login failures
-        throw new Error(data.error || "Login failed");
-      }
-
-      // Your backend returns { token, user } on success
       localStorage.setItem("travily_token", data.token);
       localStorage.setItem("travily_user", JSON.stringify(data.user));
 
@@ -171,7 +191,18 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error("Login error:", error);
-      throw error;
+      let errorMessage = error.message;
+      
+      // Better error messages for users
+      if (errorMessage.includes('HTML instead of JSON')) {
+        errorMessage = "Server configuration error. Please contact support.";
+      } else if (errorMessage.includes('Failed to fetch')) {
+        errorMessage = "Network error. Please check your connection.";
+      } else if (errorMessage.includes('401')) {
+        errorMessage = "Invalid email or password.";
+      }
+      
+      throw new Error(errorMessage);
     }
   };
 
@@ -185,7 +216,9 @@ export const AuthProvider = ({ children }) => {
     setIsAnonymous(true);
     
     // Create new anonymous session after logout
-    createAnonymousSession();
+    if (config.apiUrl.includes('localhost')) {
+      createAnonymousSession();
+    }
   };
 
   const value = {

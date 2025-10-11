@@ -6,6 +6,7 @@ import axios from "axios";
 import mountains from "../assets/img/mountains.jpg";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContexts";
+import config from "../config";
 
 const Budget = () => {
   const travelStyles = [
@@ -76,7 +77,7 @@ const Budget = () => {
       if (!token) return;
 
       const response = await axios.get(
-        "https://travily-backend.onrender.com/api/itinerary/saved",
+        `$${config.apiUrl}/api/itinerary/saved`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,15 +98,11 @@ const Budget = () => {
     try {
       if (!token) return;
 
-      await axios.post(
-        "https://travily-backend.onrender.com/api/itinerary/save",
-        itineraryData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post(`$${config.apiUrl}/api/itinerary/save`, itineraryData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success("Itinerary saved successfully!");
       fetchSavedItineraries();
     } catch (error) {
@@ -119,7 +116,7 @@ const Budget = () => {
       if (!token) return;
 
       await axios.delete(
-        `https://travily-backend.onrender.com/api/itinerary/delete/${itineraryId}`,
+        `$${config.apiUrl}/api/itinerary/delete/${itineraryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -189,7 +186,7 @@ const Budget = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://travily-backend.onrender.com/api/itinerary/generate",
+        `$${config.apiUrl}/api/insight/budget`,
         {
           destination,
           travelStyle,
