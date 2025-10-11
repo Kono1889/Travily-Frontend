@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NewsCard from "../components/NewsCard";
+import config from "../config";
 
 const NewsHomepage = () => {
   const [popularNews, setPopularNews] = useState([]);
@@ -10,6 +11,8 @@ const NewsHomepage = () => {
     const fetchPopular = async () => {
       try {
         const res = await axios.get("/api/news/popular");
+        console.log(await fetch(`${config.apiUrl}/api/health`).then(r => r.json()));
+
         setPopularNews(res.data.slice(0, 6)); // Show top 6
       } catch (err) {
         console.error("Popular news fetch error:", err);
