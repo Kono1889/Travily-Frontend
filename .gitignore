@@ -25,4 +25,5 @@ dist-ssr
 
 # .gitiginore
 .env
+.env.development
 .env.production

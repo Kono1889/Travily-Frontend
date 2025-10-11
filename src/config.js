@@ -1,8 +1,6 @@
 // src/config.js
 const config = {
-  apiUrl: window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000' 
-    : 'https://travily-backend.onrender.com'
+  apiUrl: import.meta.env.VITE_API_URL || "http://localhost:5000",
 };
 
 export default config;
