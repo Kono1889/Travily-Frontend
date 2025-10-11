@@ -28,7 +28,7 @@ const ItineraryPreference = () => {
 
   // Use AuthContext
   const { isAuthenticated, user, token, logout } = useAuth();
-  
+
   const activitiesDropdownRef = useRef(null);
 
   // Fetch saved itineraries when authenticated
@@ -61,7 +61,7 @@ const ItineraryPreference = () => {
       if (!token) return;
 
       const response = await axios.get(
-        "http://localhost:5000/api/itinerary/saved",
+        "https://travily-backend.onrender.com/api/itinerary/saved",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -83,7 +83,7 @@ const ItineraryPreference = () => {
       if (!token) return;
 
       await axios.post(
-        "http://localhost:5000/api/itinerary/save",
+        "https://travily-backend.onrender.com/api/itinerary/save",
         itineraryData,
         {
           headers: {
@@ -104,7 +104,7 @@ const ItineraryPreference = () => {
       if (!token) return;
 
       await axios.delete(
-        `http://localhost:5000/api/itinerary/delete/${itineraryId}`,
+        `https://travily-backend.onrender.com/api/itinerary/delete/${itineraryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,7 +147,7 @@ const ItineraryPreference = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/insight/budget-insight",
+        "https://travily-backend.onrender.com/api/insight/budget-insight",
         {
           destination,
           activity: selectedActivities,
@@ -246,7 +246,6 @@ const ItineraryPreference = () => {
     >
       {/* Glass background wrapper */}
       <div className="bg-white/70 backdrop-blur-lg mx-auto max-w-6xl rounded-xl px-6 sm:px-10 py-16 shadow-xl">
-        
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <motion.h1
@@ -257,7 +256,7 @@ const ItineraryPreference = () => {
           >
             Budget on your terms
           </motion.h1>
-          
+
           {/* View History Button - Show for authenticated non-anonymous users */}
           {isAuthenticated && !user?.isAnonymous && (
             <motion.button
@@ -282,12 +281,14 @@ const ItineraryPreference = () => {
           Get insights based on your budget range
           {isAuthenticated && !user?.isAnonymous && (
             <span className="block text-sm text-green-600 mt-1">
-              ✓ You are logged in as {user?.email} - your itineraries will be saved automatically
+              ✓ You are logged in as {user?.email} - your itineraries will be
+              saved automatically
             </span>
           )}
           {isAuthenticated && user?.isAnonymous && (
             <span className="block text-sm text-yellow-600 mt-1">
-              ⚠ You are in anonymous mode - Sign up to save your itineraries permanently
+              ⚠ You are in anonymous mode - Sign up to save your itineraries
+              permanently
             </span>
           )}
         </motion.p>
@@ -299,12 +300,16 @@ const ItineraryPreference = () => {
             transition={{ delay: 0.3 }}
             className="mt-10"
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Saved Itineraries</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Your Saved Itineraries
+            </h2>
             {savedItineraries.length === 0 ? (
               <div className="text-center py-8 text-gray-600 bg-white/50 rounded-lg">
                 <History className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-lg">No saved itineraries yet.</p>
-                <p className="text-sm">Generate your first itinerary to see it here!</p>
+                <p className="text-sm">
+                  Generate your first itinerary to see it here!
+                </p>
               </div>
             ) : (
               <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
@@ -323,7 +328,8 @@ const ItineraryPreference = () => {
                           {itinerary.destination}
                         </h3>
                         <p className="text-gray-600 text-sm mt-1">
-                          {itinerary.travelStyle} • {formatDate(itinerary.createdAt)}
+                          {itinerary.travelStyle} •{" "}
+                          {formatDate(itinerary.createdAt)}
                         </p>
                         {itinerary.budgetRange && (
                           <p className="text-gray-600 text-sm">
@@ -355,14 +361,21 @@ const ItineraryPreference = () => {
                     <div className="text-sm text-gray-700">
                       <p className="mb-2">
                         <strong className="text-gray-800">Activities:</strong>{" "}
-                        <span className="text-blue-600">{itinerary.activities.join(", ")}</span>
+                        <span className="text-blue-600">
+                          {itinerary.activities.join(", ")}
+                        </span>
                       </p>
-                      {itinerary.safetyScore && itinerary.safetyScore !== "Not specified" && (
-                        <p className="mb-2">
-                          <strong className="text-gray-800">Safety Score:</strong>{" "}
-                          <span className="text-green-600 font-semibold">{itinerary.safetyScore}</span>
-                        </p>
-                      )}
+                      {itinerary.safetyScore &&
+                        itinerary.safetyScore !== "Not specified" && (
+                          <p className="mb-2">
+                            <strong className="text-gray-800">
+                              Safety Score:
+                            </strong>{" "}
+                            <span className="text-green-600 font-semibold">
+                              {itinerary.safetyScore}
+                            </span>
+                          </p>
+                        )}
                       <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
                         <p className="text-xs text-gray-600 line-clamp-3">
                           {itinerary.itinerary.substring(0, 200)}...
@@ -424,11 +437,13 @@ const ItineraryPreference = () => {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
-                            selectedActivities.includes(activity) 
-                              ? "bg-blue-500 border-blue-500" 
-                              : "border-gray-400"
-                          }`}>
+                          <div
+                            className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
+                              selectedActivities.includes(activity)
+                                ? "bg-blue-500 border-blue-500"
+                                : "border-gray-400"
+                            }`}
+                          >
                             {selectedActivities.includes(activity) && (
                               <div className="w-2 h-2 bg-white rounded-sm" />
                             )}

@@ -33,9 +33,9 @@ const Budget = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [savedItineraries, setSavedItineraries] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  
+
   const { isAuthenticated, user, token, logout } = useAuth();
-  
+
   const travelRef = useRef(null);
   const activitiesRef = useRef(null);
 
@@ -76,7 +76,7 @@ const Budget = () => {
       if (!token) return;
 
       const response = await axios.get(
-        "http://localhost:5000/api/itinerary/saved",
+        "https://travily-backend.onrender.com/api/itinerary/saved",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +98,7 @@ const Budget = () => {
       if (!token) return;
 
       await axios.post(
-        "http://localhost:5000/api/itinerary/save",
+        "https://travily-backend.onrender.com/api/itinerary/save",
         itineraryData,
         {
           headers: {
@@ -119,7 +119,7 @@ const Budget = () => {
       if (!token) return;
 
       await axios.delete(
-        `http://localhost:5000/api/itinerary/delete/${itineraryId}`,
+        `https://travily-backend.onrender.com/api/itinerary/delete/${itineraryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -189,7 +189,7 @@ const Budget = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/itinerary/generate",
+        "https://travily-backend.onrender.com/api/itinerary/generate",
         {
           destination,
           travelStyle,
@@ -255,7 +255,7 @@ const Budget = () => {
           >
             Budget Your Trip
           </motion.h1>
-          
+
           {/* View History Button - Show for authenticated non-anonymous users */}
           {isAuthenticated && !user?.isAnonymous && (
             <motion.button
@@ -280,12 +280,14 @@ const Budget = () => {
           Get personalized budgeting based on your destination and travel style.
           {isAuthenticated && !user?.isAnonymous && (
             <span className="block text-sm text-green-600 mt-1">
-              ✓ You are logged in as {user?.email} - your itineraries will be saved automatically
+              ✓ You are logged in as {user?.email} - your itineraries will be
+              saved automatically
             </span>
           )}
           {isAuthenticated && user?.isAnonymous && (
             <span className="block text-sm text-yellow-600 mt-1">
-              ⚠ You are in anonymous mode - Sign up to save your itineraries permanently
+              ⚠ You are in anonymous mode - Sign up to save your itineraries
+              permanently
             </span>
           )}
         </motion.p>
@@ -297,12 +299,16 @@ const Budget = () => {
             transition={{ delay: 0.3 }}
             className="mt-10"
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Saved Itineraries</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Your Saved Itineraries
+            </h2>
             {savedItineraries.length === 0 ? (
               <div className="text-center py-8 text-gray-600 bg-white/50 rounded-lg">
                 <History className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-lg">No saved itineraries yet.</p>
-                <p className="text-sm">Generate your first itinerary to see it here!</p>
+                <p className="text-sm">
+                  Generate your first itinerary to see it here!
+                </p>
               </div>
             ) : (
               <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
@@ -321,7 +327,8 @@ const Budget = () => {
                           {itinerary.destination}
                         </h3>
                         <p className="text-gray-600 text-sm mt-1">
-                          {itinerary.travelStyle} • {formatDate(itinerary.createdAt)}
+                          {itinerary.travelStyle} •{" "}
+                          {formatDate(itinerary.createdAt)}
                         </p>
                       </div>
                       <div className="flex gap-2 ml-4">
@@ -348,14 +355,21 @@ const Budget = () => {
                     <div className="text-sm text-gray-700">
                       <p className="mb-2">
                         <strong className="text-gray-800">Activities:</strong>{" "}
-                        <span className="text-blue-600">{itinerary.activities.join(", ")}</span>
+                        <span className="text-blue-600">
+                          {itinerary.activities.join(", ")}
+                        </span>
                       </p>
-                      {itinerary.safetyScore && itinerary.safetyScore !== "Not specified" && (
-                        <p className="mb-2">
-                          <strong className="text-gray-800">Safety Score:</strong>{" "}
-                          <span className="text-green-600 font-semibold">{itinerary.safetyScore}</span>
-                        </p>
-                      )}
+                      {itinerary.safetyScore &&
+                        itinerary.safetyScore !== "Not specified" && (
+                          <p className="mb-2">
+                            <strong className="text-gray-800">
+                              Safety Score:
+                            </strong>{" "}
+                            <span className="text-green-600 font-semibold">
+                              {itinerary.safetyScore}
+                            </span>
+                          </p>
+                        )}
                       <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
                         <p className="text-xs text-gray-600 line-clamp-3">
                           {itinerary.itinerary.substring(0, 200)}...
@@ -412,7 +426,9 @@ const Budget = () => {
                           setIsDropdownOpen(false);
                         }}
                         className={`px-4 py-3 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0 ${
-                          travelStyle === style ? "bg-blue-100 font-semibold text-blue-700" : "text-gray-700"
+                          travelStyle === style
+                            ? "bg-blue-100 font-semibold text-blue-700"
+                            : "text-gray-700"
                         }`}
                       >
                         {style}
@@ -453,11 +469,13 @@ const Budget = () => {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
-                            selectedActivities.includes(activity) 
-                              ? "bg-blue-500 border-blue-500" 
-                              : "border-gray-400"
-                          }`}>
+                          <div
+                            className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
+                              selectedActivities.includes(activity)
+                                ? "bg-blue-500 border-blue-500"
+                                : "border-gray-400"
+                            }`}
+                          >
                             {selectedActivities.includes(activity) && (
                               <div className="w-2 h-2 bg-white rounded-sm" />
                             )}

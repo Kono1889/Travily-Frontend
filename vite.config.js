@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:5000", // your Express backend
+        target: "https://travily-backend.onrender.com", // your Express backend
         changeOrigin: true,
         secure: false,
       },

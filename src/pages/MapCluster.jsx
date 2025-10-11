@@ -60,7 +60,7 @@ const MapCluster = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/places?city=${city}&category=${category}`
+        `https://travily-backend.onrender.com/api/places?city=${city}&category=${category}`
       );
       const results = res.data.places || res.data;
 
