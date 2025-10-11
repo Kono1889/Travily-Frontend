@@ -157,8 +157,8 @@ const SearchBar = () => {
           {/* Input Field */}
           <input
             type="text"
-            placeholder="Search hotels, destinations or places..."
-            className="w-full pl-10 pr-24 py-4 border border-gray-300 rounded-lg bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+            placeholder="Search destinations or places..."
+            className="w-full   pl-10 pr-24 py-4 border border-gray-300 rounded-lg bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
             value={query}
             onChange={(e) => {
               const value = e.target.value;
