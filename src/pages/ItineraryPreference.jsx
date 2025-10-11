@@ -83,7 +83,7 @@ const ItineraryPreference = () => {
     try {
       if (!token) return;
 
-      await axios.post(`$${config.apiUrl}/api/itinerary/save`, itineraryData, {
+      await axios.post(`${config.apiUrl}/api/itinerary/save`, itineraryData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
