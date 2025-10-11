@@ -186,7 +186,7 @@ const Budget = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${config.apiUrl}/api/insight/budget-insight`,
+        `${config.apiUrl}/api/itinerary/generate`,
         {
           destination,
           travelStyle,
