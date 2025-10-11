@@ -77,7 +77,7 @@ const Budget = () => {
       if (!token) return;
 
       const response = await axios.get(
-        `$${config.apiUrl}/api/itinerary/saved`,
+        `${config.apiUrl}/api/itinerary/saved`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +98,7 @@ const Budget = () => {
     try {
       if (!token) return;
 
-      await axios.post(`$${config.apiUrl}/api/itinerary/save`, itineraryData, {
+      await axios.post(`${config.apiUrl}/api/itinerary/save`, itineraryData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -116,7 +116,7 @@ const Budget = () => {
       if (!token) return;
 
       await axios.delete(
-        `$${config.apiUrl}/api/itinerary/delete/${itineraryId}`,
+        `${config.apiUrl}/api/itinerary/delete/${itineraryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -186,7 +186,7 @@ const Budget = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `$${config.apiUrl}/api/insight/budget`,
+        `${config.apiUrl}/api/insight/budget`,
         {
           destination,
           travelStyle,

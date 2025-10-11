@@ -61,7 +61,7 @@ const MapCluster = () => {
 
     try {
       const res = await axios.get(
-        `$${config.apiUrl}/api/places?city=${city}&category=${category}`
+        `${config.apiUrl}/api/places?city=${city}&category=${category}`
       );
       const results = res.data.places || res.data;
 

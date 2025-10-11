@@ -62,7 +62,7 @@ const ItineraryPreference = () => {
       if (!token) return;
 
       const response = await axios.get(
-        `$${config.apiUrl}/api/itinerary/saved`,
+        `${config.apiUrl}/api/itinerary/saved`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ const ItineraryPreference = () => {
       if (!token) return;
 
       await axios.delete(
-        `$${config.apiUrl}/api/itinerary/delete/${itineraryId}`,
+        `${config.apiUrl}/api/itinerary/delete/${itineraryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
