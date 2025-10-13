@@ -2,6 +2,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
+import config from "../config";
 
 const PlaceDetails = () => {
   const { name } = useParams();
@@ -19,7 +20,7 @@ const PlaceDetails = () => {
 
       try {
         const res = await axios.get(
-          `/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=5000`
+          `${config.apiUrl}/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=5000`
         );
 
         const allPlaces = res.data.features || [];
@@ -58,7 +59,7 @@ const PlaceDetails = () => {
       } catch (err) {
         console.error("Error fetching places, images, or histories:", err);
       } finally {
-        setLoading(false); // ⬅️ Hide spinner
+        setLoading(false); // Hide spinner
       }
     };
 
@@ -88,7 +89,7 @@ const PlaceDetails = () => {
 
   const fetchImageFromUnsplash = async (query) => {
     try {
-      const res = await axios.get("/api/unsplash/image", {
+      const res = await axios.get(`${config.apiUrl}/api/unsplash/image`, {
         params: { query },
       });
       return res.data.image || null;
@@ -117,10 +118,7 @@ const PlaceDetails = () => {
           {places.map((place, idx) => {
             const placeName = place.properties.name || "Unnamed";
             return (
-              <div
-                key={idx}
-                className=" p-4 rounded-lg bg-white shadow-lg "
-              >
+              <div key={idx} className=" p-4 rounded-lg bg-white shadow-lg ">
                 <h2 className="text-xl font-semibold text-gray-700">
                   {placeName}
                 </h2>
