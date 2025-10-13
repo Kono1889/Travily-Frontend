@@ -6,7 +6,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useAuth } from "../contexts/AuthContexts";
-import AuthModal from "./AuthModal"; 
+import AuthModal from "./AuthModal";
+import config from "../config";
 
 const SearchBar = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const SearchBar = () => {
       }
 
       const res = await axios.get(
-        `/api/geoapify/autocomplete?text=${text}`,
+        `${config.apiUrl}/api/geoapify/autocomplete?text=${text}`,
         config
       );
       setSuggestions(res.data.features || []);
@@ -57,7 +58,9 @@ const SearchBar = () => {
       }
 
       const res = await axios.get(
-        `/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=2000&destinationName=${encodeURIComponent(
+        `${
+          config.apiUrl
+        }/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=2000&destinationName=${encodeURIComponent(
           formatted
         )}`,
         config
@@ -97,10 +100,10 @@ const SearchBar = () => {
       // Fetch user's saved history from backend
       const fetchUserHistory = async () => {
         try {
-          const res = await axios.get("/api/user/history", {
+          const res = await axios.get(`${config.apiUrl}/api/user/history`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setLocalHistory(res.data.history || []); 
+          setLocalHistory(res.data.history || []);
         } catch (err) {
           console.error("Failed to fetch user history", err);
         }
@@ -123,7 +126,6 @@ const SearchBar = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.7 }}
       >
-        
         {/* Authenticated User Welcome with Close Button */}
         {!isAnonymous && user && showWelcomeBanner && (
           <motion.div
@@ -134,8 +136,8 @@ const SearchBar = () => {
             <div className="flex items-center justify-between">
               <p className="text-green-800 text-sm flex items-center gap-2">
                 <span>👋</span>
-                Hey {user.username || user.email}! Your searches are
-                being saved now.
+                Hey {user.username || user.email}! Your searches are being saved
+                now.
               </p>
               <button
                 className="flex-shrink-0 p-1 text-green-400 hover:text-green-600 cursor-pointer transition-colors"
