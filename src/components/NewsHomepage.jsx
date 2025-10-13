@@ -12,8 +12,12 @@ const NewsHomepage = () => {
     const fetchPopular = async () => {
       try {
         const res = await axios.get(`${config.apiUrl}/api/news/popular`);
-        // Randomize and take top 6 (2 rows x 3 columns)
-        const randomNews = res.data.sort(() => Math.random() - 0.5).slice(0, 6);
+        // Flatten grouped data into a single array of articles
+        const allArticles = res.data.flatMap((group) => group.news);
+        const randomNews = allArticles
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 6);
+        setPopularNews(randomNews);
         setPopularNews(randomNews);
       } catch (err) {
         console.error("Popular news fetch error:", err);
@@ -62,7 +66,9 @@ const NewsHomepage = () => {
       <h1 className="text-2xl font-bold text-gray-700 mb-6">Popular News</h1>
 
       {popularNews.length === 0 ? (
-        <p className="text-gray-500 text-center">No news available at the moment.</p>
+        <p className="text-gray-500 text-center">
+          No news available at the moment.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {popularNews.map((article, idx) => (
