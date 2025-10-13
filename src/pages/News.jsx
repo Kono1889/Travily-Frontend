@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NewsCard from "../components/NewsCard";
+import config from "../config";
 
 const groupByCountry = (articles) => {
   const groups = {};
@@ -19,7 +20,7 @@ const News = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await axios.get("/api/news/popular");
+        const res = await axios.get(`${config.apiUrl}/api/news/popular`);
         const grouped = groupByCountry(res.data);
         setAllNews(grouped);
       } catch (err) {
