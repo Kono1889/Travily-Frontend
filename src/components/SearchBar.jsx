@@ -32,14 +32,14 @@ const SearchBar = () => {
   const fetchSuggestions = async (text) => {
     if (!text) return;
     try {
-      const config = {};
+      const reqConfig = {};
       if (token) {
         config.headers = { Authorization: `Bearer ${token}` };
       }
 
       const res = await axios.get(
         `${config.apiUrl}/api/geoapify/autocomplete?text=${text}`,
-        config
+        reqConfig
       );
       setSuggestions(res.data.features || []);
     } catch (err) {
@@ -52,9 +52,9 @@ const SearchBar = () => {
     try {
       setLoading(true);
 
-      const config = {};
+      const reqConfig = {};
       if (token) {
-        config.headers = { Authorization: `Bearer ${token}` };
+        reqConfig.headers = { Authorization: `Bearer ${token}` };
       }
 
       const res = await axios.get(
@@ -63,7 +63,7 @@ const SearchBar = () => {
         }/api/geoapify/places?lat=${lat}&lon=${lon}&category=tourism.sights&radius=2000&destinationName=${encodeURIComponent(
           formatted
         )}`,
-        config
+        reqConfig
       );
 
       const filtered = (res.data.features || []).filter(
