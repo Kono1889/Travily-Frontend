@@ -12,12 +12,10 @@ const NewsHomepage = () => {
     const fetchPopular = async () => {
       try {
         const res = await axios.get(`${config.apiUrl}/api/news/popular`);
-        // Flatten grouped data into a single array of articles
         const allArticles = res.data.flatMap((group) => group.news);
         const randomNews = allArticles
           .sort(() => Math.random() - 0.5)
           .slice(0, 6);
-        setPopularNews(randomNews);
         setPopularNews(randomNews);
       } catch (err) {
         console.error("Popular news fetch error:", err);
@@ -29,10 +27,9 @@ const NewsHomepage = () => {
     fetchPopular();
   }, []);
 
-  // Show loading indicator while fetching
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center">
           <svg
             className="animate-spin h-8 w-8 text-blue-600 mb-3"
@@ -54,31 +51,45 @@ const NewsHomepage = () => {
               d="M4 12a8 8 0 018-8v8H4z"
             ></path>
           </svg>
-          <p className="text-gray-600">Loading latest news...</p>
+          <p className="text-gray-600 text-sm md:text-base">
+            Loading latest news...
+          </p>
         </div>
       </div>
     );
   }
 
-  // Show news when loaded
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-gray-700 mb-6">Popular News</h1>
+    <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-10">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 text-center sm:text-left">
+        Popular News
+      </h1>
 
       {popularNews.length === 0 ? (
-        <p className="text-gray-500 text-center">
+        <p className="text-gray-500 text-center text-sm md:text-base">
           No news available at the moment.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          className="
+            grid 
+            grid-cols-1 
+            sm:grid-cols-2 
+            md:grid-cols-3 
+            lg:grid-cols-3 
+            gap-8
+            w-full
+          "
+        >
           {popularNews.map((article, idx) => (
-            <NewsCard
-              key={idx}
-              title={article.title}
-              imageUrl={article.image_url}
-              source={article.source_id}
-              url={article.link}
-            />
+            <div key={idx} className="flex justify-center">
+              <NewsCard
+                title={article.title}
+                imageUrl={article.image_url}
+                source={article.source_id}
+                url={article.link}
+              />
+            </div>
           ))}
         </div>
       )}

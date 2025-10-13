@@ -41,7 +41,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-white shadow-md p-4 fixed max-w-full z-50 top-0 left-0 right-0">
-        <div className="max-w-7xl mx-auto lg:mx-20 flex justify-between items-center">
+        <div className="w-full px-4 sm:px-8 lg:px-20 2xl:px-30 flex justify-between items-center">
           {/* Logo */}
           <Link to="/">
             <div className="text-2xl font-bold text-blue-900">Travily</div>
@@ -62,7 +62,7 @@ const Navbar = () => {
             {/* User profile / auth */}
             {isAuthenticated && !isAnonymous ? (
               <div className="relative" ref={dropdownRef}>
-                <UserAvatar 
+                <UserAvatar
                   user={user}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 />
@@ -123,11 +123,10 @@ const Navbar = () => {
             ) : (
               <div className="relative" ref={mobileAuthRef}>
                 <div className="flex items-center gap-2">
-                  <UserAvatar 
+                  <UserAvatar
                     user={user}
                     onClick={() => setShowMobileAuthMenu(!showMobileAuthMenu)}
                   />
-                  
                 </div>
 
                 {/* Mobile Auth Dropdown */}
@@ -162,14 +161,26 @@ const Navbar = () => {
             )}
 
             {/* Mobile Hamburger */}
-            <button 
+            <button
               className="relative z-10"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <div className="space-y-1">
-                <span className={`block w-6 h-0.5 bg-black transition-transform ${menuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
-                <span className={`block w-6 h-0.5 bg-black ${menuOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`block w-6 h-0.5 bg-black transition-transform ${menuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+                <span
+                  className={`block w-6 h-0.5 bg-black transition-transform ${
+                    menuOpen ? "rotate-45 translate-y-1.5" : ""
+                  }`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 bg-black ${
+                    menuOpen ? "opacity-0" : ""
+                  }`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 bg-black transition-transform ${
+                    menuOpen ? "-rotate-45 -translate-y-1.5" : ""
+                  }`}
+                ></span>
               </div>
             </button>
           </div>
