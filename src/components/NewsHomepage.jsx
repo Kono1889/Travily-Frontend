@@ -5,7 +5,7 @@ import NewsCard from "../components/NewsCard";
 import config from "../config";
 
 const NewsHomepage = () => {
-  const [popularNews, setPopularNews] = useState([]);
+  const [groupedNews, setGroupedNews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,10 +13,8 @@ const NewsHomepage = () => {
       try {
         const res = await axios.get(`${config.apiUrl}/api/news/popular`);
         // Randomize and take top 6
-        const randomNews = res.data
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 6);
-        setPopularNews(randomNews);
+        const randomNews = res.data.sort(() => Math.random() - 0.5).slice(0, 6);
+        setGroupedNews(randomNews);
       } catch (err) {
         console.error("Popular news fetch error:", err);
       } finally {
@@ -61,7 +59,7 @@ const NewsHomepage = () => {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-700 mb-6">Popular News</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {popularNews.map((article, idx) => (
+        {groupedNews.map((article, idx) => (
           <NewsCard
             key={idx}
             title={article.title}
